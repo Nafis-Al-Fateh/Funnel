@@ -1,141 +1,104 @@
 import streamlit as st
+from graphviz import Digraph
 
-st.set_page_config(page_title="Sales Funnel", layout="wide")
+st.set_page_config(page_title="Sales Funnel Flowchart", layout="wide")
+
+st.title("🚀 Sales Funnel Flowchart")
+
+# Create flowchart
+dot = Digraph()
+dot.attr(rankdir='TB', size='8,12')
 
 # ======================
 # STYLES
 # ======================
-st.markdown("""
-    <style>
-    .box {
-        padding: 16px;
-        border-radius: 12px;
-        text-align: center;
-        font-weight: 500;
-        margin: 6px 0;
-    }
-    .blue { background-color: #E3F2FD; }
-    .green { background-color: #E8F5E9; }
-    .orange { background-color: #FFF3E0; }
-    .red { background-color: #FFEBEE; }
-    .purple { background-color: #F3E5F5; }
-    </style>
-""", unsafe_allow_html=True)
+dot.attr('node', shape='box', style='filled', fontname="Helvetica")
 
-st.title("🚀 Sales Funnel Flow")
+# Lead Gen
+dot.node('LinkedIn', 'LinkedIn', fillcolor='#E3F2FD')
+dot.node('Ads', 'Paid Ads', fillcolor='#E3F2FD')
+dot.node('Email', 'Email Outreach', fillcolor='#E3F2FD')
+dot.node('SEO', 'Website / SEO', fillcolor='#E3F2FD')
+dot.node('Referral', 'Referrals', fillcolor='#E3F2FD')
 
-# ======================
-# TOP CHANNELS
-# ======================
-st.subheader("1. Lead Generation")
+# Capture
+dot.node('Capture', 'Lead Captured', fillcolor='#F3E5F5')
+dot.node('Qualify', 'Qualification\n(Budget • Need • Authority)', fillcolor='#F3E5F5')
 
-cols = st.columns(5)
-channels = ["LinkedIn", "Paid Ads", "Email Outreach", "Website / SEO", "Referrals"]
+# Qualification Outcomes
+dot.node('HighFit', 'High Fit', fillcolor='#E8F5E9')
+dot.node('MedFit', 'Medium Fit', fillcolor='#E3F2FD')
+dot.node('LowFit', 'Low Fit', fillcolor='#FFEBEE')
 
-for col, ch in zip(cols, channels):
-    col.markdown(f'<div class="box blue">{ch}</div>', unsafe_allow_html=True)
+# Discovery
+dot.node('Discovery', 'Discovery Call', fillcolor='#E3F2FD')
+dot.node('GoodFit', 'Good Fit', fillcolor='#E8F5E9')
+dot.node('Maybe', 'Maybe', fillcolor='#FFF3E0')
+dot.node('NotFit', 'Not Fit', fillcolor='#FFEBEE')
 
-st.markdown("---")
+# Strategy
+dot.node('Strategy', 'Strategy Session', fillcolor='#F3E5F5')
+dot.node('Offer', 'Present Offer', fillcolor='#E3F2FD')
 
-# ======================
-# CAPTURE + QUALIFY
-# ======================
-st.markdown('<div class="box purple">Lead Captured (Landing Page)</div>', unsafe_allow_html=True)
-st.markdown('<div class="box purple">Quick Qualification (Budget • Need • Authority)</div>', unsafe_allow_html=True)
+# Closing
+dot.node('ClosedWon', 'Closed Won 🎉', fillcolor='#E8F5E9')
+dot.node('Stalled', 'Stalled', fillcolor='#FFF3E0')
+dot.node('Lost', 'Lost', fillcolor='#FFEBEE')
 
-# ======================
-# FIT SPLIT
-# ======================
-st.subheader("2. Qualification Outcome")
+# Onboarding
+dot.node('Onboarding', 'Onboarding', fillcolor='#E3F2FD')
 
-col1, col2, col3 = st.columns(3)
+# Delivery
+dot.node('Delivery', 'Service Delivery', fillcolor='#E8F5E9')
 
-col1.markdown('<div class="box green">High Fit<br>Ideal Client</div>', unsafe_allow_html=True)
-col2.markdown('<div class="box blue">Medium Fit<br>Nurture</div>', unsafe_allow_html=True)
-col3.markdown('<div class="box red">Low Fit<br>Not a Match</div>', unsafe_allow_html=True)
-
-st.markdown("---")
+# Reporting
+dot.node('Reporting', 'Reporting & Growth', fillcolor='#F3E5F5')
 
 # ======================
-# DISCOVERY
+# EDGES (ARROWS)
 # ======================
-st.subheader("3. Discovery Call")
 
-st.markdown('<div class="box blue">Book Discovery Call</div>', unsafe_allow_html=True)
-st.markdown('<div class="box blue">Understand Goals & Challenges</div>', unsafe_allow_html=True)
+# Lead sources → capture
+for source in ['LinkedIn', 'Ads', 'Email', 'SEO', 'Referral']:
+    dot.edge(source, 'Capture')
 
-col1, col2, col3 = st.columns(3)
+dot.edge('Capture', 'Qualify')
 
-col1.markdown('<div class="box blue">Maybe<br>Send Case Studies</div>', unsafe_allow_html=True)
-col2.markdown('<div class="box green">Good Fit<br>Proceed</div>', unsafe_allow_html=True)
-col3.markdown('<div class="box red">Not a Fit<br>CRM Nurture</div>', unsafe_allow_html=True)
+# Qualification branching
+dot.edge('Qualify', 'HighFit')
+dot.edge('Qualify', 'MedFit')
+dot.edge('Qualify', 'LowFit')
 
-st.markdown("---")
+# High + Medium → Discovery
+dot.edge('HighFit', 'Discovery')
+dot.edge('MedFit', 'Discovery')
 
-# ======================
-# STRATEGY
-# ======================
-st.subheader("4. Strategy & Offer")
+# Low fit exit
+dot.edge('LowFit', 'NotFit')
 
-st.markdown('<div class="box purple">Paid Strategy Session</div>', unsafe_allow_html=True)
-st.markdown('<div class="box purple">Growth Roadmap</div>', unsafe_allow_html=True)
-st.markdown('<div class="box orange">Free Trial (Optional)</div>', unsafe_allow_html=True)
-st.markdown('<div class="box blue">Present Packages</div>', unsafe_allow_html=True)
+# Discovery outcomes
+dot.edge('Discovery', 'GoodFit')
+dot.edge('Discovery', 'Maybe')
+dot.edge('Discovery', 'NotFit')
 
-st.markdown("---")
+# Good fit → Strategy
+dot.edge('GoodFit', 'Strategy')
 
-# ======================
-# CLOSING
-# ======================
-st.subheader("5. Closing")
+# Maybe → nurture loop
+dot.edge('Maybe', 'Discovery')
 
-col1, col2, col3 = st.columns(3)
+# Strategy → Offer → Closing
+dot.edge('Strategy', 'Offer')
+dot.edge('Offer', 'ClosedWon')
+dot.edge('Offer', 'Stalled')
+dot.edge('Offer', 'Lost')
 
-col1.markdown('<div class="box red">Lost Deal</div>', unsafe_allow_html=True)
-col2.markdown('<div class="box green">Deal Closed 🎉</div>', unsafe_allow_html=True)
-col3.markdown('<div class="box orange">Stalled → Follow-up</div>', unsafe_allow_html=True)
-
-st.markdown("---")
-
-# ======================
-# ONBOARDING
-# ======================
-st.subheader("6. Onboarding")
-
-st.markdown('<div class="box blue">Kickoff Call</div>', unsafe_allow_html=True)
-st.markdown('<div class="box blue">Collect Assets</div>', unsafe_allow_html=True)
-st.markdown('<div class="box blue">Define KPIs</div>', unsafe_allow_html=True)
-
-st.markdown("---")
+# Closed → Onboarding → Delivery → Reporting
+dot.edge('ClosedWon', 'Onboarding')
+dot.edge('Onboarding', 'Delivery')
+dot.edge('Delivery', 'Reporting')
 
 # ======================
-# DELIVERY
+# RENDER
 # ======================
-st.subheader("7. Delivery")
-
-col1, col2, col3, col4 = st.columns(4)
-
-col1.markdown('<div class="box purple">Marketing<br>Ads + Analytics</div>', unsafe_allow_html=True)
-col2.markdown('<div class="box green">Design<br>Creatives</div>', unsafe_allow_html=True)
-col3.markdown('<div class="box blue">Video<br>Reels + Edits</div>', unsafe_allow_html=True)
-col4.markdown('<div class="box orange">Dev<br>Website + Tracking</div>', unsafe_allow_html=True)
-
-st.markdown('<div class="box green">Content Live + Ads Running</div>', unsafe_allow_html=True)
-
-st.markdown("---")
-
-# ======================
-# REPORTING
-# ======================
-st.subheader("8. Reporting & Growth")
-
-st.markdown('<div class="box purple">Monthly Reporting</div>', unsafe_allow_html=True)
-st.markdown('<div class="box purple">Review ROI</div>', unsafe_allow_html=True)
-
-col1, col2, col3 = st.columns(3)
-
-col1.markdown('<div class="box green">Upsell / Cross-sell</div>', unsafe_allow_html=True)
-col2.markdown('<div class="box green">Optimize & Scale</div>', unsafe_allow_html=True)
-col3.markdown('<div class="box red">At Risk Client</div>', unsafe_allow_html=True)
-
-st.markdown('<div class="box green">Referrals + Reviews</div>', unsafe_allow_html=True)
+st.graphviz_chart(dot)
