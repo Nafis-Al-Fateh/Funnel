@@ -3,33 +3,36 @@ import streamlit as st
 st.set_page_config(layout="wide")
 
 # ======================
-# STYLES
+# STYLE
 # ======================
 st.markdown("""
 <style>
-body {
-    background: #0f172a;
-}
+body { background: #0f172a; }
 
 /* Title */
 .title {
     text-align: center;
-    font-size: 40px;
+    font-size: 38px;
     font-weight: 700;
     color: white;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+}
+
+/* Section spacing */
+.section {
+    margin-top: 30px;
 }
 
 /* Cards */
 .card {
-    padding: 14px 18px;
+    padding: 16px;
     border-radius: 14px;
     text-align: center;
     font-weight: 500;
     color: white;
-    margin: 6px auto;
-    width: 220px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    margin: 10px auto;
+    width: 260px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
 }
 
 /* Colors */
@@ -44,7 +47,6 @@ body {
     text-align: center;
     font-size: 22px;
     color: #94a3b8;
-    margin: 2px 0;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -52,9 +54,11 @@ body {
 st.markdown('<div class="title">🚀 Sales Funnel</div>', unsafe_allow_html=True)
 
 # ======================
-# LEAD GEN (TOP ROW)
+# LEAD GEN
 # ======================
-cols = st.columns([1,1,1,1,1])
+st.markdown('<div class="section"></div>', unsafe_allow_html=True)
+
+cols = st.columns(5)
 channels = ["LinkedIn", "Ads", "Email", "SEO", "Referrals"]
 
 for col, ch in zip(cols, channels):
@@ -64,7 +68,7 @@ for col, ch in zip(cols, channels):
 st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
 
 # ======================
-# CORE FUNNEL (CENTERED)
+# CORE FUNNEL
 # ======================
 center = st.columns([1,2,1])[1]
 
@@ -73,12 +77,13 @@ with center:
     st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="card purple">Qualification (BANT)</div>', unsafe_allow_html=True)
-    st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
 
 # ======================
-# SPLIT (3 WAY)
+# SPLIT
 # ======================
-left, mid, right = st.columns(3)
+st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
+
+left, mid, right = st.columns([1,2,1])
 
 with left:
     st.markdown('<div class="card green">High Fit</div>', unsafe_allow_html=True)
@@ -89,18 +94,18 @@ with mid:
 with right:
     st.markdown('<div class="card red">Low Fit</div>', unsafe_allow_html=True)
 
+# ======================
+# DISCOVERY
+# ======================
 st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
 
-# ======================
-# DISCOVERY (CENTER)
-# ======================
 with center:
     st.markdown('<div class="card blue">Discovery Call</div>', unsafe_allow_html=True)
 
 # ======================
 # DISCOVERY SPLIT
 # ======================
-left, mid, right = st.columns(3)
+left, mid, right = st.columns([1,2,1])
 
 with left:
     st.markdown('<div class="card green">Good Fit</div>', unsafe_allow_html=True)
@@ -111,22 +116,23 @@ with mid:
 with right:
     st.markdown('<div class="card red">Not Fit</div>', unsafe_allow_html=True)
 
+# ======================
+# STRATEGY
+# ======================
 st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
 
-# ======================
-# STRATEGY → OFFER
-# ======================
 with center:
     st.markdown('<div class="card purple">Strategy Session</div>', unsafe_allow_html=True)
     st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="card blue">Present Offer</div>', unsafe_allow_html=True)
-    st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
 
 # ======================
-# CLOSING SPLIT
+# CLOSING
 # ======================
-left, mid, right = st.columns(3)
+st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
+
+left, mid, right = st.columns([1,2,1])
 
 with left:
     st.markdown('<div class="card red">Lost</div>', unsafe_allow_html=True)
@@ -137,11 +143,11 @@ with mid:
 with right:
     st.markdown('<div class="card orange">Stalled</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
-
 # ======================
 # FINAL FLOW
 # ======================
+st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
+
 with center:
     st.markdown('<div class="card blue">Onboarding</div>', unsafe_allow_html=True)
     st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
