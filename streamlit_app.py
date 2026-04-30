@@ -2,200 +2,277 @@ import streamlit as st
 
 st.set_page_config(layout="wide")
 
-# ======================
-# MODERN UI STYLE
-# ======================
 st.markdown("""
 <style>
 
 /* Background */
 .stApp {
-    background: radial-gradient(circle at top, #0f172a, #020617);
-    color: white;
-    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+    font-family: Inter, sans-serif;
 }
 
-/* Title */
-.title {
+/* Container */
+.wrapper {
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* Row */
+.row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+}
+
+/* Box base */
+.box {
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
     text-align: center;
-    font-size: 42px;
-    font-weight: 800;
-    margin-bottom: 30px;
-    letter-spacing: -0.5px;
+    border: 2px solid;
+    background: white;
+    min-width: 160px;
 }
 
-/* Section spacing */
-.section {
-    margin-top: 40px;
-}
-
-/* Glass Cards */
-.card {
-    padding: 18px;
-    border-radius: 16px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 16px;
-    margin: 10px auto;
-    width: 240px;
-
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(12px);
-
-    border: 1px solid rgba(255,255,255,0.08);
-
-    transition: all 0.3s ease;
-}
-
-/* Hover Effect */
-.card:hover {
-    transform: translateY(-6px) scale(1.03);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-/* Highlight (main funnel steps) */
-.main {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-}
-
-/* Status Colors */
-.green { background: linear-gradient(135deg, #22c55e, #16a34a); }
-.orange { background: linear-gradient(135deg, #f59e0b, #ea580c); }
-.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
-.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+/* Colors */
+.blue { border-color: #60a5fa; background:#eff6ff; }
+.purple { border-color: #a78bfa; background:#f5f3ff; }
+.green { border-color: #86efac; background:#f0fdf4; }
+.orange { border-color: #fdba74; background:#fff7ed; }
+.red { border-color: #fca5a5; background:#fef2f2; }
 
 /* Arrow */
 .arrow {
-    text-align: center;
-    font-size: 26px;
-    margin: 10px 0;
-    color: #64748b;
+    text-align:center;
+    font-size:18px;
+    margin:5px 0;
+    color:#64748b;
 }
 
-/* Section Label */
-.label {
-    text-align: center;
-    font-size: 14px;
-    color: #94a3b8;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+/* Section title */
+.section {
+    text-align:center;
+    font-size:13px;
+    color:#64748b;
+    margin-top:20px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ======================
-# TITLE
-# ======================
-st.markdown('<div class="title">🚀 Sales Funnel</div>', unsafe_allow_html=True)
+st.markdown('<div class="wrapper">', unsafe_allow_html=True)
 
-# ======================
-# LEAD SOURCES
-# ======================
-st.markdown('<div class="label">Lead Sources</div>', unsafe_allow_html=True)
-
-cols = st.columns(5)
-channels = ["LinkedIn", "Paid Ads", "Email", "SEO", "Referrals"]
-
-for col, ch in zip(cols, channels):
-    with col:
-        st.markdown(f'<div class="card">{ch}</div>', unsafe_allow_html=True)
+# TOP CHANNELS
+st.markdown("""
+<div class="row">
+<div class="box purple">LinkedIn</div>
+<div class="box purple">Paid ads</div>
+<div class="box purple">Email outreach</div>
+<div class="box purple">Website / SEO</div>
+<div class="box purple">Referrals / partners</div>
+<div class="box blue">Postcode business search</div>
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
 
-# ======================
-# CORE FUNNEL
-# ======================
-center = st.columns([1,2,1])[1]
-
-with center:
-    st.markdown('<div class="card main">Lead Captured</div>', unsafe_allow_html=True)
-    st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="card main">Qualification (BANT)</div>', unsafe_allow_html=True)
+# LEAD CAPTURE
+st.markdown("""
+<div class="row">
+<div class="box purple">Lead captured (lead magnet / landing page)</div>
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
 
-# ======================
-# QUALIFICATION SPLIT
-# ======================
-st.markdown('<div class="label">Lead Quality</div>', unsafe_allow_html=True)
-
-left, mid, right = st.columns([1,2,1])
-
-with left:
-    st.markdown('<div class="card green">High Fit</div>', unsafe_allow_html=True)
-
-with mid:
-    st.markdown('<div class="card blue">Medium Fit</div>', unsafe_allow_html=True)
-
-with right:
-    st.markdown('<div class="card red">Low Fit</div>', unsafe_allow_html=True)
+# QUALIFICATION
+st.markdown("""
+<div class="row">
+<div class="box purple">Quick qualification filter<br>Budget, need, authority – eliminate mismatch</div>
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
 
-# ======================
+# SPLIT
+st.markdown("""
+<div class="row">
+<div class="box green">High fit<br>A — Ideal client</div>
+<div class="box blue">Medium fit<br>B — Maybe, nurture</div>
+<div class="box red">Low fit<br>C — not a fit / not active</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
+
+# BOOK CALL
+st.markdown("""
+<div class="row">
+<div class="box blue">Book discovery call</div>
+<div class="box orange">Nurture sequence<br>7–30day email + SMS cadence</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="section">2 — Discovery call (45–60m)</div>', unsafe_allow_html=True)
+
 # DISCOVERY
-# ======================
-with center:
-    st.markdown('<div class="card main">Discovery Call</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="row">
+<div class="box blue">Discovery call<br>Understand goals, challenges, current situation</div>
+</div>
+""", unsafe_allow_html=True)
 
-# ======================
-# DISCOVERY RESULT
-# ======================
-st.markdown('<div class="label">Discovery Outcome</div>', unsafe_allow_html=True)
+# RESULT
+st.markdown("""
+<div class="row">
+<div class="box blue">Maybe<br>Needs more info</div>
+<div class="box green">Good fit<br>Hot budget + need</div>
+<div class="box red">Not a fit<br>No budget / wrong fit</div>
+</div>
+""", unsafe_allow_html=True)
 
-left, mid, right = st.columns([1,2,1])
+st.markdown("""
+<div class="row">
+<div class="box blue">Send case studies<br>Testimonial + paid POV</div>
+<div class="box red">CRM tag + nurture<br>Reconnect in 30 days</div>
+</div>
+""", unsafe_allow_html=True)
 
-with left:
-    st.markdown('<div class="card green">Good Fit</div>', unsafe_allow_html=True)
+st.markdown('<div class="section">3 — Strategy session (paid) (30–60m)</div>', unsafe_allow_html=True)
 
-with mid:
-    st.markdown('<div class="card orange">Maybe</div>', unsafe_allow_html=True)
+# STRATEGY
+st.markdown("""
+<div class="row">
+<div class="box purple">Paid growth strategy session<br>Marketing audit delivery + growth roadmap</div>
+</div>
+""", unsafe_allow_html=True)
 
-with right:
-    st.markdown('<div class="card red">Not Fit</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="row">
+<div class="box purple">Present opportunities + growth roadmap</div>
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="row">
+<div class="box green">Free trial offer (optional close tool)<br>2-week sample content + ad creative</div>
+</div>
+""", unsafe_allow_html=True)
 
-# ======================
-# STRATEGY + OFFER
-# ======================
-with center:
-    st.markdown('<div class="card main">Strategy Session</div>', unsafe_allow_html=True)
-    st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="row">
+<div class="box blue">Present 3 packages (starter / growth / scale)</div>
+</div>
+""", unsafe_allow_html=True)
 
-    st.markdown('<div class="card blue">Present Offer</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="row">
+<div class="box blue">Objection handling + final question</div>
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
+# CLOSE
+st.markdown("""
+<div class="row">
+<div class="box red">Hard no<br>CRM tag (valid) ⌀</div>
+<div class="box green">Deal closed — contract + payment</div>
+<div class="box orange">Stalled deal<br>Follow up D+7, D+14</div>
+</div>
+""", unsafe_allow_html=True)
 
-# ======================
-# CLOSING
-# ======================
-st.markdown('<div class="label">Closing Outcome</div>', unsafe_allow_html=True)
+st.markdown('<div class="section">4 — Onboarding & kick-off</div>', unsafe_allow_html=True)
 
-left, mid, right = st.columns([1,2,1])
+# ONBOARDING
+st.markdown("""
+<div class="row">
+<div class="box blue">Onboarding kickoff call<br>Welcome, align expectation, set KPIs</div>
+</div>
+""", unsafe_allow_html=True)
 
-with left:
-    st.markdown('<div class="card red">Lost</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="row">
+<div class="box blue">Collect assets + access<br>Branding, ad accounts, social logins, website</div>
+</div>
+""", unsafe_allow_html=True)
 
-with mid:
-    st.markdown('<div class="card green">Closed Won 🎉</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="row">
+<div class="box blue">Define KPIs + 90-day growth roadmap</div>
+</div>
+""", unsafe_allow_html=True)
 
-with right:
-    st.markdown('<div class="card orange">Stalled</div>', unsafe_allow_html=True)
+st.markdown('<div class="section">5 — Delivery (ongoing paid team workstream)</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
+# DELIVERY
+st.markdown("""
+<div class="row">
+<div class="box purple">Marketing<br>Ads, content, analytics</div>
+<div class="box green">Design team<br>Creative, branding</div>
+<div class="box green">Video team<br>Reels, edits</div>
+<div class="box orange">Dev team<br>Website, tech, tracking</div>
+</div>
+""", unsafe_allow_html=True)
 
-# ======================
-# POST-SALE FLOW
-# ======================
-with center:
-    st.markdown('<div class="card main">Onboarding</div>', unsafe_allow_html=True)
-    st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="row">
+<div class="box purple">Ad management</div>
+<div class="box green">Ad creatives</div>
+<div class="box green">Video ads</div>
+<div class="box orange">Build + landing pages</div>
+</div>
+""", unsafe_allow_html=True)
 
-    st.markdown('<div class="card green">Delivery</div>', unsafe_allow_html=True)
-    st.markdown('<div class="arrow">↓</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="row">
+<div class="box purple">Analytics + reports</div>
+<div class="box green">Ongoing creative</div>
+<div class="box green">Editing + optimize</div>
+<div class="box orange">Tracking + CRM setup</div>
+</div>
+""", unsafe_allow_html=True)
 
-    st.markdown('<div class="card blue">Reporting & Growth</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="row">
+<div class="box green">Content published + ads live<br>All assets live weekly output – reaching audience</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="section">6 — Reporting & growth engine</div>', unsafe_allow_html=True)
+
+# REPORTING
+st.markdown("""
+<div class="row">
+<div class="box purple">Monthly reporting call<br>Results, insights, ROI, next steps</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="row">
+<div class="box purple">Review performance + ROI</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="row">
+<div class="box green">Upsell / cross-sell</div>
+<div class="box green">Optimize + scale</div>
+<div class="box orange">At-risk client</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="row">
+<div class="box green">Happy client referral request</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="row">
+<div class="box green">Google review + warm referral intro</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
