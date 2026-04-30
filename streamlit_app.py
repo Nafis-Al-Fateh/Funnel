@@ -1,179 +1,141 @@
 import streamlit as st
-import requests
-import pandas as pd
-import os
 
-# =========================
-# CONFIG
-# =========================
-st.set_page_config(page_title="Sales Funnel CRM", layout="wide")
+st.set_page_config(page_title="Sales Funnel", layout="wide")
 
-NOTION_API_KEY = os.getenv("NOTION_API_KEY")
-DATABASE_ID = os.getenv("NOTION_DB_ID")
-
-HEADERS = {
-    "Authorization": f"Bearer {NOTION_API_KEY}",
-    "Content-Type": "application/json",
-    "Notion-Version": "2022-06-28",
-}
-
-STAGES = [
-    "Lead",
-    "Qualified",
-    "Discovery",
-    "Strategy",
-    "Closed Won",
-    "Closed Lost",
-]
-
-# =========================
-# NOTION FUNCTIONS
-# =========================
-def get_leads():
-    url = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
-    res = requests.post(url, headers=HEADERS)
-
-    data = res.json().get("results", [])
-
-    leads = []
-    for item in data:
-        try:
-            name = item["properties"]["Name"]["title"][0]["plain_text"]
-        except:
-            name = "Unnamed"
-
-        stage = item["properties"]["Stage"]["select"]["name"]
-
-        leads.append({
-            "id": item["id"],
-            "name": name,
-            "stage": stage
-        })
-
-    return pd.DataFrame(leads)
-
-
-def create_lead(name, stage):
-    url = "https://api.notion.com/v1/pages"
-
-    payload = {
-        "parent": {"database_id": DATABASE_ID},
-        "properties": {
-            "Name": {
-                "title": [{"text": {"content": name}}]
-            },
-            "Stage": {
-                "select": {"name": stage}
-            }
-        }
+# ======================
+# STYLES
+# ======================
+st.markdown("""
+    <style>
+    .box {
+        padding: 16px;
+        border-radius: 12px;
+        text-align: center;
+        font-weight: 500;
+        margin: 6px 0;
     }
+    .blue { background-color: #E3F2FD; }
+    .green { background-color: #E8F5E9; }
+    .orange { background-color: #FFF3E0; }
+    .red { background-color: #FFEBEE; }
+    .purple { background-color: #F3E5F5; }
+    </style>
+""", unsafe_allow_html=True)
 
-    requests.post(url, headers=HEADERS, json=payload)
+st.title("🚀 Sales Funnel Flow")
 
+# ======================
+# TOP CHANNELS
+# ======================
+st.subheader("1. Lead Generation")
 
-def update_stage(page_id, new_stage):
-    url = f"https://api.notion.com/v1/pages/{page_id}"
+cols = st.columns(5)
+channels = ["LinkedIn", "Paid Ads", "Email Outreach", "Website / SEO", "Referrals"]
 
-    payload = {
-        "properties": {
-            "Stage": {
-                "select": {"name": new_stage}
-            }
-        }
-    }
+for col, ch in zip(cols, channels):
+    col.markdown(f'<div class="box blue">{ch}</div>', unsafe_allow_html=True)
 
-    requests.patch(url, headers=HEADERS, json=payload)
+st.markdown("---")
 
+# ======================
+# CAPTURE + QUALIFY
+# ======================
+st.markdown('<div class="box purple">Lead Captured (Landing Page)</div>', unsafe_allow_html=True)
+st.markdown('<div class="box purple">Quick Qualification (Budget • Need • Authority)</div>', unsafe_allow_html=True)
 
-# =========================
-# UI HEADER
-# =========================
-st.title("🚀 Sales Funnel CRM Dashboard")
+# ======================
+# FIT SPLIT
+# ======================
+st.subheader("2. Qualification Outcome")
 
-# =========================
-# ADD LEAD
-# =========================
-with st.expander("➕ Add New Lead"):
-    name = st.text_input("Lead Name")
-    stage = st.selectbox("Stage", STAGES)
+col1, col2, col3 = st.columns(3)
 
-    if st.button("Create Lead"):
-        if name:
-            create_lead(name, stage)
-            st.success("Lead Created!")
-            st.rerun()
-        else:
-            st.error("Enter a name")
+col1.markdown('<div class="box green">High Fit<br>Ideal Client</div>', unsafe_allow_html=True)
+col2.markdown('<div class="box blue">Medium Fit<br>Nurture</div>', unsafe_allow_html=True)
+col3.markdown('<div class="box red">Low Fit<br>Not a Match</div>', unsafe_allow_html=True)
 
-# =========================
-# LOAD DATA
-# =========================
-df = get_leads()
+st.markdown("---")
 
-if df.empty:
-    st.warning("No leads found")
-    st.stop()
+# ======================
+# DISCOVERY
+# ======================
+st.subheader("3. Discovery Call")
 
-# =========================
-# METRICS
-# =========================
-st.subheader("📊 Funnel Metrics")
+st.markdown('<div class="box blue">Book Discovery Call</div>', unsafe_allow_html=True)
+st.markdown('<div class="box blue">Understand Goals & Challenges</div>', unsafe_allow_html=True)
 
-metrics = df["stage"].value_counts().to_dict()
+col1, col2, col3 = st.columns(3)
 
-cols = st.columns(len(STAGES))
+col1.markdown('<div class="box blue">Maybe<br>Send Case Studies</div>', unsafe_allow_html=True)
+col2.markdown('<div class="box green">Good Fit<br>Proceed</div>', unsafe_allow_html=True)
+col3.markdown('<div class="box red">Not a Fit<br>CRM Nurture</div>', unsafe_allow_html=True)
 
-for i, stage in enumerate(STAGES):
-    cols[i].metric(stage, metrics.get(stage, 0))
+st.markdown("---")
 
-# Conversion rates
-def conversion(a, b):
-    return round((b / a) * 100, 1) if a else 0
+# ======================
+# STRATEGY
+# ======================
+st.subheader("4. Strategy & Offer")
 
-lead = metrics.get("Lead", 0)
-qualified = metrics.get("Qualified", 0)
-discovery = metrics.get("Discovery", 0)
-closed = metrics.get("Closed Won", 0)
+st.markdown('<div class="box purple">Paid Strategy Session</div>', unsafe_allow_html=True)
+st.markdown('<div class="box purple">Growth Roadmap</div>', unsafe_allow_html=True)
+st.markdown('<div class="box orange">Free Trial (Optional)</div>', unsafe_allow_html=True)
+st.markdown('<div class="box blue">Present Packages</div>', unsafe_allow_html=True)
 
-st.write("### Conversion Rates")
-st.write(f"Lead → Qualified: {conversion(lead, qualified)}%")
-st.write(f"Qualified → Discovery: {conversion(qualified, discovery)}%")
-st.write(f"Discovery → Closed: {conversion(discovery, closed)}%")
+st.markdown("---")
 
-# =========================
-# PIPELINE (KANBAN STYLE)
-# =========================
-st.subheader("🧩 Pipeline View")
+# ======================
+# CLOSING
+# ======================
+st.subheader("5. Closing")
 
-cols = st.columns(len(STAGES))
+col1, col2, col3 = st.columns(3)
 
-for i, stage in enumerate(STAGES):
-    with cols[i]:
-        st.markdown(f"### {stage}")
+col1.markdown('<div class="box red">Lost Deal</div>', unsafe_allow_html=True)
+col2.markdown('<div class="box green">Deal Closed 🎉</div>', unsafe_allow_html=True)
+col3.markdown('<div class="box orange">Stalled → Follow-up</div>', unsafe_allow_html=True)
 
-        stage_df = df[df["stage"] == stage]
+st.markdown("---")
 
-        for _, row in stage_df.iterrows():
-            with st.container():
-                st.markdown(f"**{row['name']}**")
+# ======================
+# ONBOARDING
+# ======================
+st.subheader("6. Onboarding")
 
-                new_stage = st.selectbox(
-                    "Move to",
-                    STAGES,
-                    index=STAGES.index(stage),
-                    key=row["id"]
-                )
+st.markdown('<div class="box blue">Kickoff Call</div>', unsafe_allow_html=True)
+st.markdown('<div class="box blue">Collect Assets</div>', unsafe_allow_html=True)
+st.markdown('<div class="box blue">Define KPIs</div>', unsafe_allow_html=True)
 
-                if new_stage != stage:
-                    if st.button("Update", key=row["id"] + "_btn"):
-                        update_stage(row["id"], new_stage)
-                        st.rerun()
+st.markdown("---")
 
-                st.markdown("---")
+# ======================
+# DELIVERY
+# ======================
+st.subheader("7. Delivery")
 
-# =========================
-# TABLE VIEW
-# =========================
-st.subheader("📋 All Leads")
+col1, col2, col3, col4 = st.columns(4)
 
-st.dataframe(df, use_container_width=True)
+col1.markdown('<div class="box purple">Marketing<br>Ads + Analytics</div>', unsafe_allow_html=True)
+col2.markdown('<div class="box green">Design<br>Creatives</div>', unsafe_allow_html=True)
+col3.markdown('<div class="box blue">Video<br>Reels + Edits</div>', unsafe_allow_html=True)
+col4.markdown('<div class="box orange">Dev<br>Website + Tracking</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="box green">Content Live + Ads Running</div>', unsafe_allow_html=True)
+
+st.markdown("---")
+
+# ======================
+# REPORTING
+# ======================
+st.subheader("8. Reporting & Growth")
+
+st.markdown('<div class="box purple">Monthly Reporting</div>', unsafe_allow_html=True)
+st.markdown('<div class="box purple">Review ROI</div>', unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3)
+
+col1.markdown('<div class="box green">Upsell / Cross-sell</div>', unsafe_allow_html=True)
+col2.markdown('<div class="box green">Optimize & Scale</div>', unsafe_allow_html=True)
+col3.markdown('<div class="box red">At Risk Client</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="box green">Referrals + Reviews</div>', unsafe_allow_html=True)
