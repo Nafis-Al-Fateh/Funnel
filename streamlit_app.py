@@ -1,104 +1,146 @@
 import streamlit as st
-from graphviz import Digraph
 
-st.set_page_config(page_title="Sales Funnel Flowchart", layout="wide")
-
-st.title("🚀 Sales Funnel Flowchart")
-
-# Create flowchart
-dot = Digraph()
-dot.attr(rankdir='TB', size='8,12')
+st.set_page_config(page_title="Beautiful Funnel", layout="wide")
 
 # ======================
 # STYLES
 # ======================
-dot.attr('node', shape='box', style='filled', fontname="Helvetica")
+st.markdown("""
+<style>
+body {
+    background: linear-gradient(180deg, #0f172a, #1e293b);
+}
 
-# Lead Gen
-dot.node('LinkedIn', 'LinkedIn', fillcolor='#E3F2FD')
-dot.node('Ads', 'Paid Ads', fillcolor='#E3F2FD')
-dot.node('Email', 'Email Outreach', fillcolor='#E3F2FD')
-dot.node('SEO', 'Website / SEO', fillcolor='#E3F2FD')
-dot.node('Referral', 'Referrals', fillcolor='#E3F2FD')
+.title {
+    text-align: center;
+    font-size: 42px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 30px;
+}
 
-# Capture
-dot.node('Capture', 'Lead Captured', fillcolor='#F3E5F5')
-dot.node('Qualify', 'Qualification\n(Budget • Need • Authority)', fillcolor='#F3E5F5')
+.section {
+    text-align: center;
+    color: #cbd5f5;
+    font-size: 20px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
 
-# Qualification Outcomes
-dot.node('HighFit', 'High Fit', fillcolor='#E8F5E9')
-dot.node('MedFit', 'Medium Fit', fillcolor='#E3F2FD')
-dot.node('LowFit', 'Low Fit', fillcolor='#FFEBEE')
+.card {
+    padding: 18px;
+    border-radius: 16px;
+    text-align: center;
+    font-weight: 500;
+    color: white;
+    margin: 8px;
+    box-shadow: 0px 8px 20px rgba(0,0,0,0.3);
+    transition: 0.3s;
+}
+.card:hover {
+    transform: translateY(-4px);
+}
 
-# Discovery
-dot.node('Discovery', 'Discovery Call', fillcolor='#E3F2FD')
-dot.node('GoodFit', 'Good Fit', fillcolor='#E8F5E9')
-dot.node('Maybe', 'Maybe', fillcolor='#FFF3E0')
-dot.node('NotFit', 'Not Fit', fillcolor='#FFEBEE')
+.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.green { background: linear-gradient(135deg, #22c55e, #16a34a); }
+.orange { background: linear-gradient(135deg, #f59e0b, #ea580c); }
+.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
 
-# Strategy
-dot.node('Strategy', 'Strategy Session', fillcolor='#F3E5F5')
-dot.node('Offer', 'Present Offer', fillcolor='#E3F2FD')
+.arrow {
+    text-align: center;
+    font-size: 28px;
+    color: #94a3b8;
+    margin: -5px 0;
+}
+</style>
+""", unsafe_allow_html=True)
 
-# Closing
-dot.node('ClosedWon', 'Closed Won 🎉', fillcolor='#E8F5E9')
-dot.node('Stalled', 'Stalled', fillcolor='#FFF3E0')
-dot.node('Lost', 'Lost', fillcolor='#FFEBEE')
-
-# Onboarding
-dot.node('Onboarding', 'Onboarding', fillcolor='#E3F2FD')
-
-# Delivery
-dot.node('Delivery', 'Service Delivery', fillcolor='#E8F5E9')
-
-# Reporting
-dot.node('Reporting', 'Reporting & Growth', fillcolor='#F3E5F5')
-
-# ======================
-# EDGES (ARROWS)
-# ======================
-
-# Lead sources → capture
-for source in ['LinkedIn', 'Ads', 'Email', 'SEO', 'Referral']:
-    dot.edge(source, 'Capture')
-
-dot.edge('Capture', 'Qualify')
-
-# Qualification branching
-dot.edge('Qualify', 'HighFit')
-dot.edge('Qualify', 'MedFit')
-dot.edge('Qualify', 'LowFit')
-
-# High + Medium → Discovery
-dot.edge('HighFit', 'Discovery')
-dot.edge('MedFit', 'Discovery')
-
-# Low fit exit
-dot.edge('LowFit', 'NotFit')
-
-# Discovery outcomes
-dot.edge('Discovery', 'GoodFit')
-dot.edge('Discovery', 'Maybe')
-dot.edge('Discovery', 'NotFit')
-
-# Good fit → Strategy
-dot.edge('GoodFit', 'Strategy')
-
-# Maybe → nurture loop
-dot.edge('Maybe', 'Discovery')
-
-# Strategy → Offer → Closing
-dot.edge('Strategy', 'Offer')
-dot.edge('Offer', 'ClosedWon')
-dot.edge('Offer', 'Stalled')
-dot.edge('Offer', 'Lost')
-
-# Closed → Onboarding → Delivery → Reporting
-dot.edge('ClosedWon', 'Onboarding')
-dot.edge('Onboarding', 'Delivery')
-dot.edge('Delivery', 'Reporting')
+st.markdown('<div class="title">🚀 Sales Funnel</div>', unsafe_allow_html=True)
 
 # ======================
-# RENDER
+# LEAD GEN
 # ======================
-st.graphviz_chart(dot)
+st.markdown('<div class="section">Lead Generation</div>', unsafe_allow_html=True)
+
+cols = st.columns(5)
+channels = ["LinkedIn", "Ads", "Email", "SEO", "Referrals"]
+
+for col, ch in zip(cols, channels):
+    col.markdown(f'<div class="card blue">{ch}</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="arrow">⬇️</div>', unsafe_allow_html=True)
+
+# ======================
+# CAPTURE
+# ======================
+st.markdown('<div class="card purple">Lead Captured</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="arrow">⬇️</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="card purple">Qualification (BANT)</div>', unsafe_allow_html=True)
+
+# ======================
+# SPLIT
+# ======================
+st.markdown('<div class="arrow">⬇️</div>', unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3)
+
+col1.markdown('<div class="card green">High Fit</div>', unsafe_allow_html=True)
+col2.markdown('<div class="card blue">Medium Fit</div>', unsafe_allow_html=True)
+col3.markdown('<div class="card red">Low Fit</div>', unsafe_allow_html=True)
+
+# ======================
+# DISCOVERY
+# ======================
+st.markdown('<div class="arrow">⬇️</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="card blue">Discovery Call</div>', unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3)
+
+col1.markdown('<div class="card green">Good Fit</div>', unsafe_allow_html=True)
+col2.markdown('<div class="card orange">Maybe</div>', unsafe_allow_html=True)
+col3.markdown('<div class="card red">Not Fit</div>', unsafe_allow_html=True)
+
+# ======================
+# STRATEGY
+# ======================
+st.markdown('<div class="arrow">⬇️</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="card purple">Strategy Session</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="card blue">Offer Presented</div>', unsafe_allow_html=True)
+
+# ======================
+# CLOSING
+# ======================
+st.markdown('<div class="arrow">⬇️</div>', unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3)
+
+col1.markdown('<div class="card green">Closed Won 🎉</div>', unsafe_allow_html=True)
+col2.markdown('<div class="card orange">Stalled</div>', unsafe_allow_html=True)
+col3.markdown('<div class="card red">Lost</div>', unsafe_allow_html=True)
+
+# ======================
+# DELIVERY
+# ======================
+st.markdown('<div class="arrow">⬇️</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="card blue">Onboarding</div>', unsafe_allow_html=True)
+st.markdown('<div class="card green">Service Delivery</div>', unsafe_allow_html=True)
+
+# ======================
+# GROWTH
+# ======================
+st.markdown('<div class="arrow">⬇️</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="card purple">Reporting & Growth</div>', unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3)
+
+col1.markdown('<div class="card green">Upsell</div>', unsafe_allow_html=True)
+col2.markdown('<div class="card green">Scale</div>', unsafe_allow_html=True)
+col3.markdown('<div class="card red">Churn Risk</div>', unsafe_allow_html=True)
