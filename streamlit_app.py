@@ -1,123 +1,179 @@
 import streamlit as st
+import requests
+import pandas as pd
+import os
 
-st.set_page_config(page_title="Sales Funnel", layout="wide")
+# =========================
+# CONFIG
+# =========================
+st.set_page_config(page_title="Sales Funnel CRM", layout="wide")
 
-st.title("📊 Sales Funnel Dashboard")
+NOTION_API_KEY = os.getenv("NOTION_API_KEY")
+DATABASE_ID = os.getenv("NOTION_DB_ID")
 
-st.markdown("---")
+HEADERS = {
+    "Authorization": f"Bearer {NOTION_API_KEY}",
+    "Content-Type": "application/json",
+    "Notion-Version": "2022-06-28",
+}
 
-# Sidebar navigation
-stage = st.sidebar.radio(
-    "Select Funnel Stage",
-    [
-        "Lead Generation",
-        "Qualification",
-        "Discovery Call",
-        "Strategy & Offer",
-        "Closing",
-        "Onboarding",
-        "Delivery",
-        "Reporting & Growth"
-    ]
-)
+STAGES = [
+    "Lead",
+    "Qualified",
+    "Discovery",
+    "Strategy",
+    "Closed Won",
+    "Closed Lost",
+]
 
-# Stage content
-if stage == "Lead Generation":
-    st.header("1. Lead Generation Engine")
-    st.write("Channels:")
-    st.button("LinkedIn")
-    st.button("Paid Ads")
-    st.button("Email Outreach")
-    st.button("Website / SEO")
-    st.button("Referrals / Partners")
+# =========================
+# NOTION FUNCTIONS
+# =========================
+def get_leads():
+    url = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
+    res = requests.post(url, headers=HEADERS)
 
-elif stage == "Qualification":
-    st.header("2. Qualification Filter")
-    budget = st.selectbox("Budget", ["Low", "Medium", "High"])
-    need = st.selectbox("Need", ["Weak", "Moderate", "Strong"])
-    authority = st.selectbox("Authority", ["No", "Partial", "Yes"])
+    data = res.json().get("results", [])
 
-    if budget == "High" and need == "Strong" and authority == "Yes":
-        st.success("High Fit (Ideal Client)")
-    elif budget == "Medium":
-        st.warning("Medium Fit (Nurture)")
-    else:
-        st.error("Low Fit (Not a match)")
+    leads = []
+    for item in data:
+        try:
+            name = item["properties"]["Name"]["title"][0]["plain_text"]
+        except:
+            name = "Unnamed"
 
-elif stage == "Discovery Call":
-    st.header("3. Discovery Call")
-    st.text_area("Client Goals")
-    st.text_area("Challenges")
-    st.text_area("Current Situation")
+        stage = item["properties"]["Stage"]["select"]["name"]
 
-    decision = st.radio("Outcome", ["Good Fit", "Maybe", "Not a Fit"])
+        leads.append({
+            "id": item["id"],
+            "name": name,
+            "stage": stage
+        })
 
-    if decision == "Good Fit":
-        st.success("Proceed to Strategy Session")
-    elif decision == "Maybe":
-        st.info("Send Case Studies")
-    else:
-        st.error("Add to CRM Nurture")
+    return pd.DataFrame(leads)
 
-elif stage == "Strategy & Offer":
-    st.header("4. Strategy Session")
-    st.write("Deliverables:")
-    st.checkbox("Marketing Audit")
-    st.checkbox("Growth Roadmap")
 
-    st.subheader("Offer")
-    package = st.selectbox("Select Package", ["Starter", "Growth", "Scale"])
-    st.write(f"Selected: {package}")
+def create_lead(name, stage):
+    url = "https://api.notion.com/v1/pages"
 
-elif stage == "Closing":
-    st.header("5. Closing")
-    decision = st.radio("Deal Status", ["Closed", "Stalled", "Lost"])
+    payload = {
+        "parent": {"database_id": DATABASE_ID},
+        "properties": {
+            "Name": {
+                "title": [{"text": {"content": name}}]
+            },
+            "Stage": {
+                "select": {"name": stage}
+            }
+        }
+    }
 
-    if decision == "Closed":
-        st.success("Contract Signed & Payment Received")
-    elif decision == "Stalled":
-        st.warning("Follow up in 7-14 days")
-    else:
-        st.error("Mark as Lost in CRM")
+    requests.post(url, headers=HEADERS, json=payload)
 
-elif stage == "Onboarding":
-    st.header("6. Onboarding")
-    st.checkbox("Kickoff Call Completed")
-    st.checkbox("Assets Collected")
-    st.checkbox("KPIs Defined")
 
-elif stage == "Delivery":
-    st.header("7. Delivery")
-    col1, col2, col3, col4 = st.columns(4)
+def update_stage(page_id, new_stage):
+    url = f"https://api.notion.com/v1/pages/{page_id}"
 
-    with col1:
-        st.subheader("Marketing")
-        st.write("Ads, Analytics")
+    payload = {
+        "properties": {
+            "Stage": {
+                "select": {"name": new_stage}
+            }
+        }
+    }
 
-    with col2:
-        st.subheader("Design")
-        st.write("Creatives, Branding")
+    requests.patch(url, headers=HEADERS, json=payload)
 
-    with col3:
-        st.subheader("Video")
-        st.write("Reels, Edits")
 
-    with col4:
-        st.subheader("Development")
-        st.write("Website, Tracking")
+# =========================
+# UI HEADER
+# =========================
+st.title("🚀 Sales Funnel CRM Dashboard")
 
-elif stage == "Reporting & Growth":
-    st.header("8. Reporting & Growth")
-    st.write("Monthly Reporting")
+# =========================
+# ADD LEAD
+# =========================
+with st.expander("➕ Add New Lead"):
+    name = st.text_input("Lead Name")
+    stage = st.selectbox("Stage", STAGES)
 
-    roi = st.slider("ROI", 0, 300, 100)
+    if st.button("Create Lead"):
+        if name:
+            create_lead(name, stage)
+            st.success("Lead Created!")
+            st.rerun()
+        else:
+            st.error("Enter a name")
 
-    if roi > 150:
-        st.success("Scale Campaign")
-    elif roi > 80:
-        st.info("Optimize")
-    else:
-        st.error("At Risk Client")
+# =========================
+# LOAD DATA
+# =========================
+df = get_leads()
 
-st.markdown("---")
-st.caption("Interactive funnel visualization built with Streamlit")
+if df.empty:
+    st.warning("No leads found")
+    st.stop()
+
+# =========================
+# METRICS
+# =========================
+st.subheader("📊 Funnel Metrics")
+
+metrics = df["stage"].value_counts().to_dict()
+
+cols = st.columns(len(STAGES))
+
+for i, stage in enumerate(STAGES):
+    cols[i].metric(stage, metrics.get(stage, 0))
+
+# Conversion rates
+def conversion(a, b):
+    return round((b / a) * 100, 1) if a else 0
+
+lead = metrics.get("Lead", 0)
+qualified = metrics.get("Qualified", 0)
+discovery = metrics.get("Discovery", 0)
+closed = metrics.get("Closed Won", 0)
+
+st.write("### Conversion Rates")
+st.write(f"Lead → Qualified: {conversion(lead, qualified)}%")
+st.write(f"Qualified → Discovery: {conversion(qualified, discovery)}%")
+st.write(f"Discovery → Closed: {conversion(discovery, closed)}%")
+
+# =========================
+# PIPELINE (KANBAN STYLE)
+# =========================
+st.subheader("🧩 Pipeline View")
+
+cols = st.columns(len(STAGES))
+
+for i, stage in enumerate(STAGES):
+    with cols[i]:
+        st.markdown(f"### {stage}")
+
+        stage_df = df[df["stage"] == stage]
+
+        for _, row in stage_df.iterrows():
+            with st.container():
+                st.markdown(f"**{row['name']}**")
+
+                new_stage = st.selectbox(
+                    "Move to",
+                    STAGES,
+                    index=STAGES.index(stage),
+                    key=row["id"]
+                )
+
+                if new_stage != stage:
+                    if st.button("Update", key=row["id"] + "_btn"):
+                        update_stage(row["id"], new_stage)
+                        st.rerun()
+
+                st.markdown("---")
+
+# =========================
+# TABLE VIEW
+# =========================
+st.subheader("📋 All Leads")
+
+st.dataframe(df, use_container_width=True)
